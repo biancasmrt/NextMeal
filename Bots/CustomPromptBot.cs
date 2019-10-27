@@ -59,9 +59,8 @@ namespace Microsoft.BotBuilderSamples
                     if (ValidateString(input, out string location, out message))
                     {
                         profile.Location = location;
-                        await turnContext.SendActivityAsync($"You're in {profile.Location}.");
                         await turnContext.SendActivityAsync("Do you have any dietary restrictions?");
-                        await turnContext.SendActivityAsync("Enter Vegetarian, Vegan, Gluten-Free, Halal, Kosher, or none");
+                        await turnContext.SendActivityAsync("Enter vegetarian, vegan, gluten-free, halal, kosher, or none");
                         flow.LastQuestionAsked = ConversationFlow.Question.Diet;
                         break;
                     }
@@ -75,7 +74,7 @@ namespace Microsoft.BotBuilderSamples
                     {
                         profile.Diet = diet;
                         await turnContext.SendActivityAsync($"Great! Next, what meal are you looking for?");
-                        await turnContext.SendActivityAsync($"Want Breakfast, Lunch or Dinner?");
+                        await turnContext.SendActivityAsync($"Want breakfast, lunch or dinner?");
                         flow.LastQuestionAsked = ConversationFlow.Question.Meal;
                         break;
                     }
