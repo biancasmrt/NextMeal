@@ -122,19 +122,19 @@ namespace Microsoft.BotBuilderSamples
                     // The result resolution is a dictionary, where the "value" entry contains the processed string.
                     if (result.Resolution.TryGetValue("value", out object value))
                     {
-                        age = Convert.ToInt32(value);
-                        if (name >= 1 && name <= 6)
+                        name = Convert.ToInt32(value);
+                        if (name >= 1 && name <= 3)
                         {
                             return true;
                         }
                     }
                 }
 
-                message = "Please enter an age between 1 and 6.";
+                message = "Please enter an age between 1 and 3.";
             }
             catch
             {
-                message = "I'm sorry, I could not interpret that as an age. Please enter a number between 1 and 6.";
+                message = "I'm sorry, I could not interpret that as an age. Please enter a number between 1 and 3.";
             }
 
             return message is null;
