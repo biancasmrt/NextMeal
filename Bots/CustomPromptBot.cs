@@ -51,9 +51,8 @@ namespace Microsoft.BotBuilderSamples
             switch (flow.LastQuestionAsked)
             {
                 case ConversationFlow.Question.None:
-                    await turnContext.SendActivityAsync("Welcome to FoodMatch!");
-                    await turnContext.SendActivityAsync("Where are you?");
-                    await turnContext.SendActivityAsync("Enter Atlanta, New York, or Chicago: ");
+                    await turnContext.SendActivityAsync("Welcome to Find My Meal!"); 
+                    await turnContext.SendActivityAsync("Please enter your address!"); 
                     flow.LastQuestionAsked = ConversationFlow.Question.Location;
                     break;
                 case ConversationFlow.Question.Location:
@@ -62,7 +61,7 @@ namespace Microsoft.BotBuilderSamples
                         profile.Location = location;
                         await turnContext.SendActivityAsync($"You're in {profile.Location}.");
                         await turnContext.SendActivityAsync("Do you have any dietary restrictions?");
-                        await turnContext.SendActivityAsync("Enter Vegetarian, Vegan, Gluten-Free, Halal, or none");
+                        await turnContext.SendActivityAsync("Enter Vegetarian, Vegan, Gluten-Free, Halal, Kosher, or none");
                         flow.LastQuestionAsked = ConversationFlow.Question.Diet;
                         break;
                     }
@@ -90,7 +89,7 @@ namespace Microsoft.BotBuilderSamples
                     {
                         profile.Meal = meal;
                         await turnContext.SendActivityAsync($"Now, what price range are you looking for?");
-                        await turnContext.SendActivityAsync($"0-5, 5-10, 10-20, 20+");
+                        await turnContext.SendActivityAsync($"Enter in format 'min-max'");
                         flow.LastQuestionAsked = ConversationFlow.Question.Range;
                         break;
                     }
@@ -125,7 +124,7 @@ namespace Microsoft.BotBuilderSamples
 
             if (string.IsNullOrWhiteSpace(input))
             {
-                message = "Please enter the exact location.";
+                message = "Please enter an option from the list.";
             }
             else
             {
@@ -135,40 +134,6 @@ namespace Microsoft.BotBuilderSamples
             return message is null;
 
 
-        }
-
-        private static bool ValidateDiet(string input, out string diet, out string message)
-        {
-            diet = null;
-            message = null;
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                message = "Please enter the exact diet.";
-            }
-            else
-            {
-                diet = input.Trim();
-            }
-
-            return message is null;
-        }
-
-        private static bool ValidateMeal(string input, out string meal, out string message)
-        {
-            meal = null;
-            message = null;
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                message = "Please enter the exact meal type.";
-            }
-            else
-            {
-                meal = input.Trim();
-            }
-
-            return message is null;
         }
     }
 }
