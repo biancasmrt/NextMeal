@@ -51,8 +51,8 @@ namespace Microsoft.BotBuilderSamples
             switch (flow.LastQuestionAsked)
             {
                 case ConversationFlow.Question.None:
-                    await turnContext.SendActivityAsync("Welcome to Find My Meal!"); 
-                    await turnContext.SendActivityAsync("Please enter your address!"); 
+                    await turnContext.SendActivityAsync("Welcome to NextMeal! Let's get started."); 
+                    await turnContext.SendActivityAsync("Please enter your address:"); 
                     flow.LastQuestionAsked = ConversationFlow.Question.Location;
                     break;
                 case ConversationFlow.Question.Location:
@@ -103,7 +103,7 @@ namespace Microsoft.BotBuilderSamples
                     if (ValidateString(input, out string range, out message))
                     {
                         profile.Range = range;
-                        await turnContext.SendActivityAsync($"Displaying ");
+                        await turnContext.SendActivityAsync($"Displaying {profile.Meal} options for {profile.Diet} in the range {profile.Range} within  walking distance from {profile.Location}");
                         await turnContext.SendActivityAsync($"Type anything to run the bot again.");
                         flow.LastQuestionAsked = ConversationFlow.Question.None;
                         profile = new UserProfile();
@@ -124,7 +124,7 @@ namespace Microsoft.BotBuilderSamples
 
             if (string.IsNullOrWhiteSpace(input))
             {
-                message = "Please enter an option from the list.";
+                message = "I'm sorry, I didn't understand that.";
             }
             else
             {
