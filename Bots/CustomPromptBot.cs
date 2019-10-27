@@ -110,7 +110,7 @@ namespace Microsoft.BotBuilderSamples
             message = null;
 
             // Try to recognize the input as a number. This works for responses such as "twelve" as well as "12".
-            /*try
+            try
             {
                 // Attempt to convert the Recognizer result to an integer. This works for "a dozen", "twelve", "12", and so on.
                 // The recognizer returns a list of potential recognition results, if any.
@@ -123,7 +123,7 @@ namespace Microsoft.BotBuilderSamples
                     if (result.Resolution.TryGetValue("value", out object value))
                     {
                         age = Convert.ToInt32(value);
-                        if (age >= 1 && age <= 6)
+                        if (name >= 1 && name <= 6)
                         {
                             return true;
                         }
@@ -135,7 +135,7 @@ namespace Microsoft.BotBuilderSamples
             catch
             {
                 message = "I'm sorry, I could not interpret that as an age. Please enter a number between 1 and 6.";
-            }*/
+            }
 
             return message is null;
 
@@ -168,11 +168,11 @@ namespace Microsoft.BotBuilderSamples
                     }
                 }
 
-                message = "Please enter an age between 18 and 120.";
+                message = "Please enter an age between 1 and 6.";
             }
             catch
             {
-                message = "I'm sorry, I could not interpret that as an age. Please enter an age between 18 and 120.";
+                message = "I'm sorry, I could not interpret that as an age. Please enter an age between 1 and 6.";
             }
 
             return message is null;
