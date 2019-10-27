@@ -51,7 +51,7 @@ namespace Microsoft.BotBuilderSamples
             switch (flow.LastQuestionAsked)
             {
                 case ConversationFlow.Question.None:
-                    await turnContext.SendActivityAsync("Let's get started. What is your name?");
+                    await turnContext.SendActivityAsync("Welcome to FoodMatch!");
                     flow.LastQuestionAsked = ConversationFlow.Question.Name;
                     break;
                 case ConversationFlow.Question.Name:
@@ -59,7 +59,8 @@ namespace Microsoft.BotBuilderSamples
                     {
                         profile.Name = name;
                         await turnContext.SendActivityAsync($"Hi {profile.Name}.");
-                        await turnContext.SendActivityAsync("How old are you?");
+                        await turnContext.SendActivityAsync("Where are you?");
+                        await turnContext.SendActivityAsync($"1. Atlanta 2. New York 3. Chicago ");
                         flow.LastQuestionAsked = ConversationFlow.Question.Age;
                         break;
                     }
@@ -72,8 +73,9 @@ namespace Microsoft.BotBuilderSamples
                     if (ValidateAge(input, out int age, out message))
                     {
                         profile.Age = age;
-                        await turnContext.SendActivityAsync($"I have your age as {profile.Age}.");
-                        await turnContext.SendActivityAsync("When is your flight?");
+                        await turnContext.SendActivityAsync($"{profile.Age}! cool i guess");
+                        await turnContext.SendActivityAsync("Do you have any dietary restrictions?");
+                        await turnContext.SendActivityAsync("1. Vegan 2. Vegetarian 3. Gluten Free 4. Halal 5. Kosher 6. None");
                         flow.LastQuestionAsked = ConversationFlow.Question.Date;
                         break;
                     }
@@ -107,16 +109,37 @@ namespace Microsoft.BotBuilderSamples
             name = null;
             message = null;
 
-            if (string.IsNullOrWhiteSpace(input))
+            // Try to recognize the input as a number. This works for responses such as "twelve" as well as "12".
+            try
             {
-                message = "Please enter a name that contains at least one character.";
+                // Attempt to convert the Recognizer result to an integer. This works for "a dozen", "twelve", "12", and so on.
+                // The recognizer returns a list of potential recognition results, if any.
+
+                var results = NumberRecognizer.RecognizeNumber(input, Culture.English);
+
+                foreach (var result in results)
+                {
+                    // The result resolution is a dictionary, where the "value" entry contains the processed string.
+                    if (result.Resolution.TryGetValue("value", out object value))
+                    {
+                        age = Convert.ToInt32(value);
+                        if (age >= 1 && age <= 6)
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                message = "Please enter an age between 1 and 6.";
             }
-            else
+            catch
             {
-                name = input.Trim();
+                message = "I'm sorry, I could not interpret that as an age. Please enter a number between 1 and 6.";
             }
 
             return message is null;
+
+
         }
 
         private static bool ValidateAge(string input, out int age, out string message)
