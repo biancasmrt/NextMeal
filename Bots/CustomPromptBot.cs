@@ -53,16 +53,16 @@ namespace Microsoft.BotBuilderSamples
                 case ConversationFlow.Question.None:
                     await turnContext.SendActivityAsync("Welcome to FoodMatch!");
                     await turnContext.SendActivityAsync("Where are you?");
-                    await turnContext.SendActivityAsync($"1. Atlanta 2. New York 3. Chicago ");
+                    await turnContext.SendActivityAsync("Enter Atlanta, New York, or Chicago: ");
                     flow.LastQuestionAsked = ConversationFlow.Question.Location;
                     break;
                 case ConversationFlow.Question.Location:
-                    if (ValidateLocation(input, out string location, out message))
+                    if (ValidateString(input, out string location, out message))
                     {
                         profile.Location = location;
                         await turnContext.SendActivityAsync($"You're in {profile.Location}.");
                         await turnContext.SendActivityAsync("Do you have any dietary restrictions?");
-                        await turnContext.SendActivityAsync("1. Vegan 2. Vegetarian 3. Gluten Free 4. Halal 5. Kosher 6. None");
+                        await turnContext.SendActivityAsync("Enter Vegetarian, Vegan, Gluten-Free, Halal, or none");
                         flow.LastQuestionAsked = ConversationFlow.Question.Diet;
                         break;
                     }
@@ -72,12 +72,26 @@ namespace Microsoft.BotBuilderSamples
                         break;
                     }
                 case ConversationFlow.Question.Diet:
-                    if (ValidateDiet(input, out string diet, out message))
+                    if (ValidateString(input, out string diet, out message))
                     {
                         profile.Diet = diet;
-                        await turnContext.SendActivityAsync($"{profile.Diet}! cool i guess");
-                        
-                        flow.LastQuestionAsked = ConversationFlow.Question.Date;
+                        await turnContext.SendActivityAsync($"Great! Next, what meal are you looking for?");
+                        await turnContext.SendActivityAsync($"Want Breakfast, Lunch or Dinner?");
+                        flow.LastQuestionAsked = ConversationFlow.Question.Meal;
+                        break;
+                    }
+                    else
+                    {
+                        await turnContext.SendActivityAsync(message ?? "I'm sorry, I didn't understand that.");
+                        break;
+                    }
+                case ConversationFlow.Question.Meal:
+                    if (ValidateString(input, out string meal, out message))
+                    {
+                        profile.Meal = meal;
+                        await turnContext.SendActivityAsync($"Now, what price range are you looking for?");
+                        await turnContext.SendActivityAsync($"0-5, 5-10, 10-20, 20+");
+                        flow.LastQuestionAsked = ConversationFlow.Question.Range;
                         break;
                     }
                     else
@@ -86,12 +100,11 @@ namespace Microsoft.BotBuilderSamples
                         break;
                     }
 
-                case ConversationFlow.Question.Date:
-                    if (ValidateDate(input, out string date, out message))
+                case ConversationFlow.Question.Range:
+                    if (ValidateString(input, out string range, out message))
                     {
-                        profile.Date = date;
-                        await turnContext.SendActivityAsync($"Your cab ride to the airport is scheduled for {profile.Diet}.");
-                        await turnContext.SendActivityAsync($"Thanks for completing the booking {profile.Location}.");
+                        profile.Range = range;
+                        await turnContext.SendActivityAsync($"Displaying ");
                         await turnContext.SendActivityAsync($"Type anything to run the bot again.");
                         flow.LastQuestionAsked = ConversationFlow.Question.None;
                         profile = new UserProfile();
@@ -105,9 +118,9 @@ namespace Microsoft.BotBuilderSamples
             }
         }
 
-        private static bool ValidateLocation(string input, out string location, out string message)
+        private static bool ValidateString(string input, out string checker, out string message)
         {
-            location = null;
+            checker = null;
             message = null;
 
             if (string.IsNullOrWhiteSpace(input))
@@ -116,7 +129,7 @@ namespace Microsoft.BotBuilderSamples
             }
             else
             {
-                location = input.Trim();
+                checker = input.Trim();
             }
 
             return message is null;
@@ -131,7 +144,7 @@ namespace Microsoft.BotBuilderSamples
 
             if (string.IsNullOrWhiteSpace(input))
             {
-                message = "Please enter the exact location.";
+                message = "Please enter the exact diet.";
             }
             else
             {
@@ -141,51 +154,21 @@ namespace Microsoft.BotBuilderSamples
             return message is null;
         }
 
-        private static bool ValidateDate(string input, out string date, out string message)
+        private static bool ValidateMeal(string input, out string meal, out string message)
         {
-            date = null;
+            meal = null;
             message = null;
 
-            // Try to recognize the input as a date-time. This works for responses such as "11/14/2018", "9pm", "tomorrow", "Sunday at 5pm", and so on.
-            // The recognizer returns a list of potential recognition results, if any.
-            try
+            if (string.IsNullOrWhiteSpace(input))
             {
-                var results = DateTimeRecognizer.RecognizeDateTime(input, Culture.English);
-
-                // Check whether any of the recognized date-times are appropriate,
-                // and if so, return the first appropriate date-time. We're checking for a value at least an hour in the future.
-                var earliest = DateTime.Now.AddHours(1.0);
-
-                foreach (var result in results)
-                {
-                    // The result resolution is a dictionary, where the "values" entry contains the processed input.
-                    var resolutions = result.Resolution["values"] as List<Dictionary<string, string>>;
-
-                    foreach (var resolution in resolutions)
-                    {
-                        // The processed input contains a "value" entry if it is a date-time value, or "start" and
-                        // "end" entries if it is a date-time range.
-                        if (resolution.TryGetValue("value", out string dateString)
-                            || resolution.TryGetValue("start", out dateString))
-                        {
-                            if (DateTime.TryParse(dateString, out DateTime candidate)
-                                && earliest < candidate)
-                            {
-                                date = candidate.ToShortDateString();
-                                return true;
-                            }
-                        }
-                    }
-                }
-
-                message = "I'm sorry, please enter a date at least an hour out.";
+                message = "Please enter the exact meal type.";
             }
-            catch
+            else
             {
-                message = "I'm sorry, I could not interpret that as an appropriate date. Please enter a date at least an hour out.";
+                meal = input.Trim();
             }
 
-            return false;
+            return message is null;
         }
     }
 }
