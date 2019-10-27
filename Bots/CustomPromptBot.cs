@@ -102,7 +102,7 @@ namespace Microsoft.BotBuilderSamples
                     if (ValidateString(input, out string range, out message))
                     {
                         profile.Range = range;
-                        await turnContext.SendActivityAsync($"Displaying {profile.Meal} options for {profile.Diet} in the range {profile.Range} within  walking distance from {profile.Location}");
+                        await turnContext.SendActivityAsync($"Displaying {profile.Diet} {profile.Meal} options in the range of ${profile.Range} within  walking distance from {profile.Location}");
                         await turnContext.SendActivityAsync($"Type anything to run the bot again.");
                         flow.LastQuestionAsked = ConversationFlow.Question.None;
                         profile = new UserProfile();
