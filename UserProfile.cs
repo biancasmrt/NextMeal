@@ -7,9 +7,9 @@ namespace Microsoft.BotBuilderSamples
 {
     public class UserProfile
     {
-        public string? Location { get; set; }
+        public string Location { get; set; }
 
-        public string? Diet { get; set; }
+        public string Diet { get; set; }
 
         public string Date { get; set; }
     }
