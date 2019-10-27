@@ -52,16 +52,19 @@ namespace Microsoft.BotBuilderSamples
             {
                 case ConversationFlow.Question.None:
                     await turnContext.SendActivityAsync("Welcome to FoodMatch!");
-                    flow.LastQuestionAsked = ConversationFlow.Question.Name;
+                    await turnContext.SendActivityAsync("Where are you?");
+                    await turnContext.SendActivityAsync($"1. Atlanta 2. New York 3. Chicago ");
+                    flow.LastQuestionAsked = ConversationFlow.Question.Location;
                     break;
-                case ConversationFlow.Question.Name:
-                    if (ValidateName(input, out string name, out message))
+                case ConversationFlow.Question.Location:
+                    if (ValidateLocation(input, out int location, out message))
                     {
-                        profile.Name = name;
-                        await turnContext.SendActivityAsync($"Hi {profile.Name}.");
-                        await turnContext.SendActivityAsync("Where are you?");
-                        await turnContext.SendActivityAsync($"1. Atlanta 2. New York 3. Chicago ");
-                        flow.LastQuestionAsked = ConversationFlow.Question.Age;
+
+                        profile.Location = location;
+                        await turnContext.SendActivityAsync($"You're in {profile.Location}.");
+                        await turnContext.SendActivityAsync("Do you have any dietary restrictions?");
+                        await turnContext.SendActivityAsync("1. Vegan 2. Vegetarian 3. Gluten Free 4. Halal 5. Kosher 6. None");
+                        flow.LastQuestionAsked = ConversationFlow.Question.Diet;
                         break;
                     }
                     else
@@ -69,13 +72,12 @@ namespace Microsoft.BotBuilderSamples
                         await turnContext.SendActivityAsync(message ?? "I'm sorry, I didn't understand that.");
                         break;
                     }
-                case ConversationFlow.Question.Age:
-                    if (ValidateAge(input, out int age, out message))
+                case ConversationFlow.Question.Diet:
+                    if (ValidateDiet(input, out string diet, out message))
                     {
-                        profile.Age = age;
-                        await turnContext.SendActivityAsync($"{profile.Age}! cool i guess");
-                        await turnContext.SendActivityAsync("Do you have any dietary restrictions?");
-                        await turnContext.SendActivityAsync("1. Vegan 2. Vegetarian 3. Gluten Free 4. Halal 5. Kosher 6. None");
+                        profile.Diet = Diet;
+                        await turnContext.SendActivityAsync($"{profile.Diet}! cool i guess");
+                        
                         flow.LastQuestionAsked = ConversationFlow.Question.Date;
                         break;
                     }
@@ -104,37 +106,18 @@ namespace Microsoft.BotBuilderSamples
             }
         }
 
-        private static bool ValidateName(string input, out string name, out string message)
+        private static bool ValidateLocation(string input, out string location, out string message)
         {
-            name = null;
+            location = null;
             message = null;
 
-            // Try to recognize the input as a number. This works for responses such as "twelve" as well as "12".
-            try
+            if (string.IsNullOrWhiteSpace(input))
             {
-                // Attempt to convert the Recognizer result to an integer. This works for "a dozen", "twelve", "12", and so on.
-                // The recognizer returns a list of potential recognition results, if any.
-
-                var results = NumberRecognizer.RecognizeNumber(input, Culture.English);
-
-                foreach (var result in results)
-                {
-                    // The result resolution is a dictionary, where the "value" entry contains the processed string.
-                    if (result.Resolution.TryGetValue("value", out object value))
-                    {
-                        name = Convert.ToInt32(value);
-                        if (name >= 1 && name <= 3)
-                        {
-                            return true;
-                        }
-                    }
-                }
-
-                message = "Please enter an age between 1 and 3.";
+                message = "Please enter the exact location.";
             }
-            catch
+            else
             {
-                message = "I'm sorry, I could not interpret that as an age. Please enter a number between 1 and 3.";
+                name = input.Trim();
             }
 
             return message is null;
@@ -142,37 +125,18 @@ namespace Microsoft.BotBuilderSamples
 
         }
 
-        private static bool ValidateAge(string input, out int age, out string message)
+        private static bool ValidateDiet(string input, out string diet, out string message)
         {
-            age = 0;
+            diet = null;
             message = null;
 
-            // Try to recognize the input as a number. This works for responses such as "twelve" as well as "12".
-            try
+            if (string.IsNullOrWhiteSpace(input))
             {
-                // Attempt to convert the Recognizer result to an integer. This works for "a dozen", "twelve", "12", and so on.
-                // The recognizer returns a list of potential recognition results, if any.
-
-                var results = NumberRecognizer.RecognizeNumber(input, Culture.English);
-
-                foreach (var result in results)
-                {
-                    // The result resolution is a dictionary, where the "value" entry contains the processed string.
-                    if (result.Resolution.TryGetValue("value", out object value))
-                    {
-                        age = Convert.ToInt32(value);
-                        if (age >= 18 && age <= 120)
-                        {
-                            return true;
-                        }
-                    }
-                }
-
-                message = "Please enter an age between 1 and 6.";
+                message = "Please enter the exact location.";
             }
-            catch
+            else
             {
-                message = "I'm sorry, I could not interpret that as an age. Please enter an age between 1 and 6.";
+                diet = input.Trim();
             }
 
             return message is null;
