@@ -12,7 +12,8 @@ namespace Microsoft.BotBuilderSamples
     {
         Location,
         Diet,
-        Date,
+        Meal,
+        Range,
         None, // Our last action did not involve a question.
     }
 

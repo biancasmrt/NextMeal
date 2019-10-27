@@ -11,6 +11,8 @@ namespace Microsoft.BotBuilderSamples
 
         public string Diet { get; set; }
 
-        public string Date { get; set; }
+        public string Meal { get; set; }
+
+        public string Range { get; set; }
     }
 }
