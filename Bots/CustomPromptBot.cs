@@ -57,9 +57,8 @@ namespace Microsoft.BotBuilderSamples
                     flow.LastQuestionAsked = ConversationFlow.Question.Location;
                     break;
                 case ConversationFlow.Question.Location:
-                    if (ValidateLocation(input, out int location, out message))
+                    if (ValidateLocation(input, out string location, out message))
                     {
-
                         profile.Location = location;
                         await turnContext.SendActivityAsync($"You're in {profile.Location}.");
                         await turnContext.SendActivityAsync("Do you have any dietary restrictions?");
@@ -75,7 +74,7 @@ namespace Microsoft.BotBuilderSamples
                 case ConversationFlow.Question.Diet:
                     if (ValidateDiet(input, out string diet, out message))
                     {
-                        profile.Diet = Diet;
+                        profile.Diet = diet;
                         await turnContext.SendActivityAsync($"{profile.Diet}! cool i guess");
                         
                         flow.LastQuestionAsked = ConversationFlow.Question.Date;
@@ -91,8 +90,8 @@ namespace Microsoft.BotBuilderSamples
                     if (ValidateDate(input, out string date, out message))
                     {
                         profile.Date = date;
-                        await turnContext.SendActivityAsync($"Your cab ride to the airport is scheduled for {profile.Date}.");
-                        await turnContext.SendActivityAsync($"Thanks for completing the booking {profile.Name}.");
+                        await turnContext.SendActivityAsync($"Your cab ride to the airport is scheduled for {profile.Diet}.");
+                        await turnContext.SendActivityAsync($"Thanks for completing the booking {profile.Location}.");
                         await turnContext.SendActivityAsync($"Type anything to run the bot again.");
                         flow.LastQuestionAsked = ConversationFlow.Question.None;
                         profile = new UserProfile();
@@ -117,7 +116,7 @@ namespace Microsoft.BotBuilderSamples
             }
             else
             {
-                name = input.Trim();
+                location = input.Trim();
             }
 
             return message is null;
